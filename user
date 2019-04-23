@@ -1,0 +1,64 @@
+<?php
+    class User{
+        public $login;
+        public $email;
+        public $pass;
+        public function __construct($login,$email,$pass){
+            $this->login = $login;
+            $this->email = $email;
+            $this->pass = $pass;
+        }
+        public function registr(){
+            include 'conection.php';
+            $sql_text = "INSERT INTO user(`ID`, `Login`, `MAIL`, `Password`, `Manager`, `Admin`)
+            values
+              (NULL,\"".$this->login."\",\"".$this->email."\",\"".$this->pass."\",0,0)";
+            $connection->query($sql_text);
+        }
+        
+        public function checkperreg(){
+            include 'conection.php';
+            $query = $connection->query("SELECT * from user");
+            while($row = $query->fetch_object()){
+                if($row->LOGIN==$this->login){
+                    header("Location:register.php");
+                }
+                else{
+                    if($row->MAIL === $this->email){
+                        header("Location:register.php");
+                    }
+                    else{
+                        return true;
+                    }
+                }
+            }
+        }
+        
+        public function login(){
+            session_start();
+            include 'conection.php';
+            $query = $connection->query("SELECT * from user");
+            while($row = $query->fetch_object()){
+                if($row->Login==$this->login){
+                    echo "Login";
+                    if($row->Password==$this->pass){
+                        echo "Pass";
+                        $_SESSION['id'] = $row->ID;
+                        header("Location:main.php");
+                    }
+               }
+            }
+        }
+        
+        public function addtobasket($item_id){
+            if (isset($_COOKIE['Basket'])){
+                $str = $item_id;
+            }
+            else{
+                $str = $item_id;
+            }
+            setcookie('Basket', $str, time()+3600);
+        }
+        
+    }
+?>
